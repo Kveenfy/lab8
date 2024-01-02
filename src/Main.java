@@ -1,17 +1,71 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
+import java.io.File;
+import java.io.FileWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
 public class Main {
+    static boolean isLetter(Character ch){
+        return !(ch.toString().toLowerCase().equals(ch.toString().toUpperCase()));
+    }
     public static void main(String[] args) {
-        // Press Alt+Enter with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        // Часть А
+        try(Scanner scanPoem = new Scanner(new File("Poem.txt"))) {
+            FileWriter writer = new FileWriter("PoemResult.txt");
+            Map<Character,Integer> letters = new HashMap<>();
+            Map<String,Integer> words = new HashMap<>();
+            while (scanPoem.hasNextLine()) {
+                String str = scanPoem.nextLine();
+                char[] strChar = str.toCharArray();
+                for (char ch:strChar){
+                    if (!(letters.containsKey(ch)))
+                        letters.put(ch,1);
+                    else
+                        letters.put(ch,letters.get(ch)+1);
+                }
+                String[] strSpl = str.split(" |\\;|\\,|\\:|\\…");
+                for (String elem: strSpl){
+                    if (elem.length()>1) {
+                        if (!(words.containsKey(elem)))
+                            words.put(elem, 1);
+                        else
+                            words.put(elem, words.get(elem) + 1);
+                    }
+                }
+            }
+            scanPoem.close();
 
-        // Press Shift+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
+            for (Map.Entry elem: letters.entrySet()){
+                writer.write(elem.getKey().toString()+"="+elem.getValue().toString() + "\n");
+            }
+            for (Map.Entry elem: words.entrySet()){
+                writer.write(elem.getKey().toString()+"="+elem.getValue().toString() + "\n");
+            }
+            writer.close();
+        }
+        catch (Exception e){
+            System.out.println("Error " + e);
+        }
+        //Часть C
+        try {
+            File dir = new File("newPath");
+            dir.mkdirs();
+            File file = new File("newPath\\newFile.txt");
+            file.createNewFile();
+            FileWriter writer = new FileWriter("newPath\\newFile.txt");
 
-            // Press Shift+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Ctrl+F8.
-            System.out.println("i = " + i);
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Введите путь к java файлу");
+            Scanner javaProgramm = new Scanner(new File(scanner.nextLine()));
+            while (javaProgramm.hasNextLine()){
+                String str = javaProgramm.nextLine();
+                str.replaceAll("[\\s]{2,}", " ");
+                writer.write(str + "\n");
+            }
+            writer.close();
+        }
+        catch (Exception e){
+            System.out.println("Error " + e);
         }
     }
 }
